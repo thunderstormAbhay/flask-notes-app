@@ -34,6 +34,10 @@ stages{
     stage("Run Container"){
         steps{
             echo "Running container"
+            sh '''
+            docker rm -f flask-notes || true
+            docker run -d --name flask-notes -p 5000:5000 flask-notes
+            '''
         }
     }
             
