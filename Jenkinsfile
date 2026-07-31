@@ -1,15 +1,7 @@
 pipeline {
-
     agent any
 
     stages {
-
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
                 sh '''
@@ -24,7 +16,8 @@ pipeline {
             steps {
                 sh '''
                 . venv/bin/activate
-                pytest
+                export PYTHONPATH=$PWD
+                python -m pytest -v
                 '''
             }
         }
@@ -43,23 +36,17 @@ pipeline {
                 '''
             }
         }
-
     }
 
     post {
-
-        success {
-            echo 'Build Successful'
-        }
-
-        failure {
-            echo 'Build Failed'
-        }
-
         always {
             echo 'Pipeline Finished'
         }
-
+        success {
+            echo 'Build Successful'
+        }
+        failure {
+            echo 'Build Failed'
+        }
     }
-
 }
