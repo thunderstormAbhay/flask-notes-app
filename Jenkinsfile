@@ -18,6 +18,11 @@ stages{
         stage("Run Tests"){
             steps{
                 echo "Running tests"
+                sh '''
+                . venv/bin/activate
+                export PYTHONPATH=$PWD
+                python -m pytest -v
+                '''
             }
         }
     stage("Build Docker Image"){
