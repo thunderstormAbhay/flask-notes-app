@@ -1,5 +1,7 @@
 pipeline {
-    agent dev
+    agent {
+        label 'dev'
+    }
 
     stages {
         stage('Install Dependencies') {
