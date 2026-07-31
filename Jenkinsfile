@@ -28,6 +28,7 @@ stages{
     stage("Build Docker Image"){
         steps{
             echo "Building Docker image"
+            sh ' docker build -t flask-notes .'
         }
     }
     stage("Run Container"){
