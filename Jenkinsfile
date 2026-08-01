@@ -28,18 +28,48 @@ stages{
     stage("Build Docker Image"){
         steps{
             echo "Building Docker image"
-            sh ' docker build -t flask-notes .'
+            sh ' docker build -t winwithabhay/flask-notes:latest .'
         }
     }
-    stage("Run Container"){
-        steps{
-            echo "Running container"
+    stage("Docker Login") {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'dockerhub',
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_PASS'
+        )]) {
+
             sh '''
-            docker rm -f flask-notes || true
-            docker run -d --name flask-notes -p 5000:5000 flask-notes
+            echo "$DOCKER_PASS" | docker login \
+                -u "$DOCKER_USER" \
+                --password-stdin
             '''
         }
     }
+}
+    stage("Push Image") {
+    steps {
+        sh '''
+        docker push winwithabhay/flask-notes:latest
+        '''
+    }
+}
+   stage("Deploy") {
+    steps {
+        sh '''
+        docker rm -f flask-notes || true
+
+        docker image rm winwithabhay/flask-notes:latest || true
+
+        docker pull winwithabhay/flask-notes:latest
+
+        docker run -d \
+        --name flask-notes \
+        -p 5000:5000 \
+        winwithabhay/flask-notes:latest
+        '''
+    }
+}
             
 }
 }
